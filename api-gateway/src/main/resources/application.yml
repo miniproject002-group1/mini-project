@@ -1,10 +1,55 @@
 spring:
   application:
     name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: category-service-api
+              uri: lb://category-service
+              predicates:
+                - Path=/api/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+
+
+            - id: category-service-docs
+              uri: lb://category-service
+              predicates:
+                - Path=/v3/api-docs/category-service
+              filters:
+                - RewritePath=/v3/api-docs/category-service, /v3/api-docs
+
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8181/realms/spring-microservices-realm
-  config:
-    import: "optional:configserver:http://localhost:8888"
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Category Service
+        url: /v3/api-docs/category-service
+  api-docs:
+    groups:
+      enabled: true
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans

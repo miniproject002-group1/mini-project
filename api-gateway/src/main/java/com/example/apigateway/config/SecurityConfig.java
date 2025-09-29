@@ -14,15 +14,19 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-  @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
-  private String issuerUri;
 
   @Bean
   public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
     http
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .authorizeExchange(exchange -> exchange
-                    .pathMatchers("/swagger-ui.html", "/api-docs/**", "/webjars/**").permitAll()
+                    .pathMatchers(
+                            "/swagger-ui.html",
+                            "/swagger-ui/**",    // Allows loading of all swagger-ui resources
+                            "/v3/api-docs/**",   // Standard path for OpenAPI 3 definitions
+                            "/api-docs/**",      // A more generic path for api-docs
+                            "/webjars/**"
+                    ).permitAll()
                     .anyExchange().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
@@ -30,8 +34,5 @@ public class SecurityConfig {
     return http.build();
   }
 
-  @Bean
-  public ReactiveJwtDecoder jwtDecoder() {
-    return ReactiveJwtDecoders.fromOidcIssuerLocation(issuerUri);
-  }
+
 }
