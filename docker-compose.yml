@@ -1,0 +1,64 @@
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres-db
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      # Superuser credentials for the instance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      # Comma-separated list of databases to be created by the script
+      # The script will create a user and database for each item in this list.
+      # The username and password for each will match the database name.
+      # e.g., user 'category_db' with password 'category_db'
+      POSTGRES_MULTIPLE_DATABASES: category_db,keycloak,product_db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./multiple-databases.sh:/docker-entrypoint-initdb.d/multiple-databases.sh
+    networks:
+      - microservices-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.5
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres-db
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8181:8080"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  # Zipkin Service for distributed tracing
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - microservices-network
+
+# Named volume for persisting all postgres data
+volumes:
+  postgres_data:
+    driver: local
+
+# Single custom bridge network for all inter-service communication
+networks:
+  microservices-network:
+    driver: bridge
