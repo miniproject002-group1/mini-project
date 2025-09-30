@@ -5,6 +5,7 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/api-gateway" />
+        <option name="gradleHome" value="C:\Gradle\gradle-9.0.0" />
         <option name="gradleJvm" value="openjdk-24" />
         <option name="modules">
           <set>
@@ -14,6 +15,7 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/category-service" />
+        <option name="gradleHome" value="C:\Gradle\gradle-9.0.0" />
         <option name="gradleJvm" value="openjdk-24" />
         <option name="modules">
           <set>
@@ -23,6 +25,7 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/config-server" />
+        <option name="gradleHome" value="C:\Gradle\gradle-9.0.0" />
         <option name="gradleJvm" value="openjdk-24" />
         <option name="modules">
           <set>
@@ -32,6 +35,7 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/eureka-server" />
+        <option name="gradleHome" value="C:\Gradle\gradle-9.0.0" />
         <option name="gradleJvm" value="openjdk-24" />
         <option name="modules">
           <set>
@@ -41,6 +45,7 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/keycloak-admin-client" />
+        <option name="gradleHome" value="C:\Gradle\gradle-9.0.0" />
         <option name="gradleJvm" value="openjdk-24" />
         <option name="modules">
           <set>
@@ -50,6 +55,7 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/product-service" />
+        <option name="gradleHome" value="C:\Gradle\gradle-9.0.0" />
         <option name="gradleJvm" value="openjdk-24" />
         <option name="modules">
           <set>
