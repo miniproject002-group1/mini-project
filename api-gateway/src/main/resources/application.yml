@@ -9,9 +9,16 @@ spring:
             - id: category-service-api
               uri: lb://category-service
               predicates:
-                - Path=/api/**
-              filters:
-                - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+                - Path=/api/v1/categories/**   # distinct prefix
+#              filters:
+#                - RewritePath=/api/v1/categories/(?<segment>.*), /categories/${segment}
+
+            - id: product-service-api
+              uri: lb://product-service
+              predicates:
+                - Path=/api/v1/products/**     # distinct prefix
+#              filters:
+#                - RewritePath=/api/v1/products/(?<segment>.*), /api/v1/products/${segment}
 
 
             - id: category-service-docs
@@ -21,9 +28,16 @@ spring:
               filters:
                 - RewritePath=/v3/api-docs/category-service, /v3/api-docs
 
+            - id: product-service-docs
+              uri: lb://product-service
+              predicates:
+                - Path=/v3/api-docs/product-service
+              filters:
+                - RewritePath=/v3/api-docs/product-service, /v3/api-docs
+
   security:
     oauth2:
-      resourceserver:
+      resource server:
         jwt:
           issuer-uri: http://localhost:8181/realms/spring-microservices-realm
 
@@ -32,6 +46,8 @@ springdoc:
     urls:
       - name: Category Service
         url: /v3/api-docs/category-service
+      - name: Product Service
+        url: /v3/api-docs/product-service
   api-docs:
     groups:
       enabled: true
