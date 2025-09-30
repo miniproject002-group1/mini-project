@@ -1,64 +1,92 @@
 services:
-  postgres-db:
-    image: postgres:latest
-    container_name: postgres-db
-    restart: always
-    ports:
-      - "5433:5432"
+  # --- Database for Keycloak ---
+  keycloak-db:
+    image: postgres:15.3
+    container_name: keycloak-db
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
     environment:
-      # Superuser credentials for the instance
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password123
-      # Comma-separated list of databases to be created by the script
-      # The script will create a user and database for each item in this list.
-      # The username and password for each will match the database name.
-      # e.g., user 'category_db' with password 'category_db'
-      POSTGRES_MULTIPLE_DATABASES: category_db,keycloak,product_db
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432" # Host port 5433
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
+      test: [ "CMD-SHELL", "pg_isready -U keycloak -d keycloak" ]
+      interval: 10s
       timeout: 5s
       retries: 5
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./multiple-databases.sh:/docker-entrypoint-initdb.d/multiple-databases.sh
     networks:
       - microservices-network
 
+  # --- NEW: Database for Category Service ---
+  category-db:
+    image: postgres:15.3
+    container_name: category-db
+    volumes:
+      - category_db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: category_db
+      POSTGRES_USER: category_user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432" # Host port 5434
+    networks:
+      - microservices-network
+
+  # --- NEW: Database for Product Service ---
+  product-db:
+    image: postgres:15.3
+    container_name: product-db
+    volumes:
+      - product_db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: product_db
+      POSTGRES_USER: product_user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5435:5432" # Host port 5435
+    networks:
+      - microservices-network
+
+  # --- Keycloak Service ---
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
     command: start-dev
     environment:
       KC_DB: postgres
-      KC_DB_URL_HOST: postgres-db
+      KC_DB_URL_HOST: keycloak-db # Connects to the keycloak-db service
       KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloak
+      KC_DB_PASSWORD: password
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8181:8080"
     depends_on:
-      postgres-db:
+      keycloak-db:
         condition: service_healthy
     networks:
       - microservices-network
 
-  # Zipkin Service for distributed tracing
+  # --- Zipkin Service ---
   zipkin:
-    image: openzipkin/zipkin
+    image: openzipkin/zipkin:2
     container_name: zipkin
     ports:
       - "9411:9411"
     networks:
       - microservices-network
 
-# Named volume for persisting all postgres data
 volumes:
-  postgres_data:
+  keycloak_db_data:
+    driver: local
+  # --- NEW: Named volumes for the new databases ---
+  category_db_data:
+    driver: local
+  product_db_data:
     driver: local
 
-# Single custom bridge network for all inter-service communication
 networks:
   microservices-network:
     driver: bridge
