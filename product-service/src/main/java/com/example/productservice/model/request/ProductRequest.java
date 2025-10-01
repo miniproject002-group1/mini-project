@@ -4,10 +4,7 @@ import com.example.productservice.model.Product;
 import com.example.productservice.model.response.CategoryResponse;
 import com.example.productservice.model.response.ProductResponse;
 import com.example.productservice.model.response.UserResponse;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.util.UUID;
@@ -18,14 +15,17 @@ import java.util.UUID;
 public class ProductRequest {
 
     @NotBlank(message = "Product name is required")
+    @Size(min = 3, max = 100, message = "Product name must be between 3 and 100 characters")
     private String name;
 
     @NotNull(message = "Price is required")
-    @Positive(message = "Price must be greater than 0")
+    @DecimalMin(value = "0.01", inclusive = true, message = "Price must be greater than 0")
+    @Digits(integer = 10, fraction = 2, message = "Price must be a valid monetary amount")
     private Double price;
 
     @NotNull(message = "Quantity is required")
     @Min(value = 0, message = "Quantity cannot be negative")
+    @Max(value = 10000, message = "Quantity cannot exceed 10,000")
     private Integer quantity;
 
     @NotNull(message = "Category Id is required")
