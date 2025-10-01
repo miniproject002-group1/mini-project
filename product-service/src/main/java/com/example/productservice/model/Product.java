@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "products")
 @Getter
@@ -17,8 +19,8 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String name;
 
@@ -26,9 +28,9 @@ public class Product {
 
     private Integer quantity;
 
-    private Long categoryId;
+    private UUID categoryId;
 
-    private Long userId;
+    private UUID userId;
 
     public ProductResponse toProductResponse(CategoryResponse category, UserResponse user) {
         return ProductResponse.builder()

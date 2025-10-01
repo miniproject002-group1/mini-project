@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -33,7 +34,7 @@ public class ProductController {
     }
 
     @GetMapping("/{product-id}")
-    public APIResponse<ProductResponse> getProductById(@PathVariable("product-id") Long id) {
+    public APIResponse<ProductResponse> getProductById(@PathVariable("product-id") UUID id) {
         return new APIResponse<>(
                 "Get product by id successfully",
                 productService.getProductById(id),
@@ -44,7 +45,7 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public APIResponse<Product> addProduct(@Valid @RequestBody ProductRequest product) {
+    public APIResponse<ProductResponse> addProduct(@Valid @RequestBody ProductRequest product) {
         return new APIResponse<>(
                 "Inserted new product successfully",
                 productService.addProduct(product),
@@ -54,12 +55,12 @@ public class ProductController {
     }
 
     @DeleteMapping("/{product-id}")
-    public APIResponse<Void> deleteProductById(@PathVariable("product-id") Long id) {
+    public APIResponse<Void> deleteProductById(@PathVariable("product-id") UUID id) {
         return productService.deleteProductById(id);
     }
 
     @PutMapping("/{product-id}")
-    public APIResponse<Product> updateProductById(@PathVariable("product-id") Long id, @Valid @RequestBody ProductRequest product) {
+    public APIResponse<Product> updateProductById(@PathVariable("product-id") UUID id, @Valid @RequestBody ProductRequest product) {
         return new APIResponse<>(
                 "Updated product successfully",
                 productService.updateProductById(id,product),

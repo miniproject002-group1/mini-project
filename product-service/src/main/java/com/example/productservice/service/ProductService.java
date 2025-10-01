@@ -7,15 +7,16 @@ import com.example.productservice.model.response.ProductResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProductService {
     List<Product> getProducts();
 
-    ProductResponse getProductById(Long id);
+    ProductResponse getProductById(UUID id);
 
-    Product addProduct(ProductRequest product);
+    ProductResponse addProduct(ProductRequest product);
 
-    APIResponse<Void> deleteProductById(Long id);
+    APIResponse<Void> deleteProductById(UUID id);
 
-    Product updateProductById(Long id, ProductRequest product);
+    Product updateProductById(UUID id, ProductRequest product);
 }
