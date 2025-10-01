@@ -2,6 +2,6 @@ package com.example.keycloakadminclient.service;
 
 import com.example.keycloakadminclient.dto.request.UserCreateRequest;
 
-public interface IKeycloakAdminClientService {
+public interface IAuthService {
   void createUser(UserCreateRequest userCreateRequest);
 }

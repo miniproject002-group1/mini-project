@@ -6,20 +6,35 @@ spring:
       server:
         webflux:
           routes:
-            - id: category-service-api
+            # Route for the Category Service API
+            - id: category-service-route
               uri: lb://category-service
               predicates:
-                - Path=/api/**
-              filters:
-                - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+                # This path is now specific to categories
+                - Path=/api/v1/categories/**
 
+            # Route for the Keycloak Admin Client API
+            - id: keycloak-admin-client-route
+              uri: lb://keycloak-admin-client
+              predicates:
+                # This path is now specific to users
+                - Path=/api/v1/auths/**, /api/v1/profiles/**
 
-            - id: category-service-docs
+            # Route for the Category Service's API documentation
+            - id: category-service-docs-route
               uri: lb://category-service
               predicates:
                 - Path=/v3/api-docs/category-service
               filters:
                 - RewritePath=/v3/api-docs/category-service, /v3/api-docs
+
+            # Route for the Keycloak Admin Client's API documentation
+            - id: keycloak-admin-client-docs-route
+              uri: lb://keycloak-admin-client
+              predicates:
+                - Path=/v3/api-docs/keycloak-admin-client
+              filters:
+                - RewritePath=/v3/api-docs/keycloak-admin-client, /v3/api-docs
 
   security:
     oauth2:
@@ -30,6 +45,8 @@ spring:
 springdoc:
   swagger-ui:
     urls:
+      - name: User Management Service
+        url: /v3/api-docs/keycloak-admin-client
       - name: Category Service
         url: /v3/api-docs/category-service
   api-docs:

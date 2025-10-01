@@ -1,7 +1,8 @@
 package com.example.keycloakadminclient.service.impl;
 
+import com.example.keycloakadminclient.dto.request.LoginRequest;
 import com.example.keycloakadminclient.dto.request.UserCreateRequest;
-import com.example.keycloakadminclient.service.IKeycloakAdminClientService;
+import com.example.keycloakadminclient.service.IAuthService;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,16 +10,62 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 
 import java.util.Collections;
-import java.util.List;
+
+import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
+
 @Slf4j
-public class KeycloakAdminClientService implements IKeycloakAdminClientService {
+@RequiredArgsConstructor
+public class AuthService implements IAuthService {
+
   private final Keycloak keycloak;
+
+
+  @Value("${app.keycloak.server-url}")
+  private String keycloakServerUrl;
+
+  @Value("${app.keycloak.realm}")
+  private String realm;
+
+  @Value("${app.keycloak.client-id}")
+  private String clientId;
+
+  @Value("${app.keycloak.client-secret}")
+  private String clientSecret;
+
+  private final RestTemplate restTemplate = new RestTemplate();
+
+  public Map login(LoginRequest request) {
+    String tokenUrl = keycloakServerUrl + "/realms/" + realm + "/protocol/openid-connect/token";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+    String body = "grant_type=password"
+            + "&client_id=" + clientId
+            + "&client_secret=" + clientSecret
+            + "&username=" + request.getUsername()
+            + "&password=" + request.getPassword();
+
+    HttpEntity<String> httpEntity = new HttpEntity<>(body, headers);
+
+    ResponseEntity<Map> response = restTemplate.exchange(
+            tokenUrl,
+            HttpMethod.POST,
+            httpEntity,
+            Map.class
+    );
+
+    return response.getBody();
+  }
 
   public void createUser(UserCreateRequest userCreateRequest) {
     // Define the user
@@ -52,3 +99,6 @@ public class KeycloakAdminClientService implements IKeycloakAdminClientService {
     }
   }
 }
+
+
+
