@@ -15,13 +15,8 @@ public class KeycloakAdminClientConfig {
 
   @Bean
   public Keycloak keycloak() {
-    return KeycloakBuilder.builder()
-            .serverUrl(keycloakConfigProperties.getServerUrl())
-            .realm(keycloakConfigProperties.getRealm())
-            .grantType(OAuth2Constants.PASSWORD) // Using password grant type for admin credentials
-            .clientId(keycloakConfigProperties.getClientId())
-            .username(keycloakConfigProperties.getUsername())
-            .password(keycloakConfigProperties.getPassword())
+    return KeycloakBuilder.builder().serverUrl(keycloakConfigProperties.getServerUrl()).realm(keycloakConfigProperties.getRealm()).grantType(OAuth2Constants.CLIENT_CREDENTIALS) // use client credentials
+            .clientId(keycloakConfigProperties.getClientId()).clientSecret(keycloakConfigProperties.getClientSecret()) // add this
             .build();
   }
 }

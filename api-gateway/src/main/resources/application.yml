@@ -6,22 +6,30 @@ spring:
       server:
         webflux:
           routes:
-            - id: category-service-api
+            # Route for the Category Service API
+            - id: category-service-route
               uri: lb://category-service
               predicates:
-                - Path=/api/v1/categories/**   # distinct prefix
-#              filters:
-#                - RewritePath=/api/v1/categories/(?<segment>.*), /categories/${segment}
+                - Path=/api/v1/categories/** # distinct prefix
+            #              filters:
+            #                - RewritePath=/api/v1/categories/(?<segment>.*), /categories/${segment}
 
             - id: product-service-api
               uri: lb://product-service
               predicates:
-                - Path=/api/v1/products/**     # distinct prefix
-#              filters:
-#                - RewritePath=/api/v1/products/(?<segment>.*), /api/v1/products/${segment}
+                - Path=/api/v1/products/** # distinct prefix
+            #              filters:
+            #                - RewritePath=/api/v1/products/(?<segment>.*), /api/v1/products/${segment}
 
+            # Route for the Keycloak Admin Client API
+            - id: keycloak-admin-client-route
+              uri: lb://keycloak-admin-client
+              predicates:
+                # This path is now specific to users
+                - Path=/api/v1/auths/**, /api/v1/profiles/**
 
-            - id: category-service-docs
+            # Route for the Category Service's API documentation
+            - id: category-service-docs-route
               uri: lb://category-service
               predicates:
                 - Path=/v3/api-docs/category-service
@@ -34,6 +42,13 @@ spring:
                 - Path=/v3/api-docs/product-service
               filters:
                 - RewritePath=/v3/api-docs/product-service, /v3/api-docs
+            # Route for the Keycloak Admin Client's API documentation
+            - id: keycloak-admin-client-docs-route
+              uri: lb://keycloak-admin-client
+              predicates:
+                - Path=/v3/api-docs/keycloak-admin-client
+              filters:
+                - RewritePath=/v3/api-docs/keycloak-admin-client, /v3/api-docs
 
   security:
     oauth2:
@@ -44,6 +59,8 @@ spring:
 springdoc:
   swagger-ui:
     urls:
+      - name: User Management Service
+        url: /v3/api-docs/keycloak-admin-client
       - name: Category Service
         url: /v3/api-docs/category-service
       - name: Product Service
