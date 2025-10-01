@@ -6,6 +6,8 @@ spring:
   cloud:
     config:
       uri: http://localhost:8888
+  profiles:
+    active: prod
 #  security:
 #    oauth2:
 #      resource server:

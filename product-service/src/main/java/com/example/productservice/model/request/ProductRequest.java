@@ -31,12 +31,13 @@ public class ProductRequest {
     @NotNull(message = "Category Id is required")
     private UUID categoryId;
 
-    public Product toProduct() {
+    public Product toProduct(UUID userId) {
         return Product.builder()
                 .name(name)
                 .price(price)
                 .quantity(quantity)
                 .categoryId(categoryId)
+                .userId(userId)
                 .build();
     }
 
@@ -50,12 +51,14 @@ public class ProductRequest {
                 .build();
     }
 
-    public Product updateProduct(UUID id) {
+    public Product updateProduct(UUID id,UUID userId) {
         return Product.builder()
                 .id(id)
                 .name(name)
                 .price(price)
                 .quantity(quantity)
+                .categoryId(categoryId)
+                .userId(userId)
                 .build();
     }
 }

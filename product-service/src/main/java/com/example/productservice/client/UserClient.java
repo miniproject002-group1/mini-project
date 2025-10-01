@@ -2,13 +2,13 @@ package com.example.productservice.client;
 
 import com.example.productservice.model.response.UserResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 
-import java.util.UUID;
 
-@FeignClient(name = "USER-SERVICE", path = "/api/v1/users")
+@FeignClient(name = "keycloak-admin-client", path = "/api/v1/profiles/user")
 public interface UserClient {
-    @GetMapping("/{id}")
-    UserResponse getUserById(@PathVariable UUID id);
+    @GetMapping
+    UserResponse getCurrentUser(@RequestHeader("X-User-Id") String userId);
 }

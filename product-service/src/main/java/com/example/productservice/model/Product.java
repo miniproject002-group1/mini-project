@@ -28,8 +28,10 @@ public class Product {
 
     private Integer quantity;
 
+    @Column(nullable = false)
     private UUID categoryId;
 
+    @Column(nullable = false)
     private UUID userId;
 
     public ProductResponse toProductResponse(CategoryResponse category, UserResponse user) {
