@@ -8,6 +8,8 @@ import com.example.keycloakadminclient.dto.request.UserCreateRequest;
 import com.example.keycloakadminclient.dto.response.AppUserResponse;
 import com.example.keycloakadminclient.dto.response.LoginResponse;
 
+import java.util.UUID;
+
 public interface IAuthService {
   // User Creation
   void createUser(UserCreateRequest userCreateRequest);
@@ -20,9 +22,10 @@ public interface IAuthService {
   void logout(String refreshToken);
 
   // Profile Management
-  AppUserResponse getCurrentUserProfile(String userId);
+  AppUserResponse getCurrentUserProfile(UUID userId);
 
-  AppUserResponse updateCurrentUserProfile(String userId, UpdateAppUserRequest request);
+  AppUserResponse updateCurrentUserProfile(UUID userId, UpdateAppUserRequest request);
 
-  void updateUserPassword(String userId, UpdatePasswordRequest request);
+  void updateUserPassword(UUID userId, UpdatePasswordRequest request);
+
 }

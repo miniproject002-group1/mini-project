@@ -18,6 +18,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Tag(name = "User")
 @RestController
 @RequestMapping("/api/v1/profiles")
@@ -39,7 +41,7 @@ public class UserController extends BaseResponse {
   @Operation(summary = "Get current user's information")
   @GetMapping
   public ResponseEntity<ApiResponse<AppUserResponse>> getCurrentUserProfile(@AuthenticationPrincipal Jwt jwt) {
-    String userId = jwt.getSubject();
+    UUID userId = UUID.fromString(jwt.getSubject());
     return responseEntity(true, "User profile retrieved successfully.", HttpStatus.OK, authService.getCurrentUserProfile(userId));
   }
 
@@ -48,7 +50,7 @@ public class UserController extends BaseResponse {
   @Operation(summary = "Update current user's information")
   @PutMapping
   public ResponseEntity<ApiResponse<AppUserResponse>> updateCurrentUserProfile(@AuthenticationPrincipal Jwt jwt, @RequestBody @Valid UpdateAppUserRequest request) {
-    String userId = jwt.getSubject();
+    UUID userId = UUID.fromString(jwt.getSubject());
     return responseEntity(true, "User profile updated successfully.", HttpStatus.OK, authService.updateCurrentUserProfile(userId, request));
   }
 
@@ -57,7 +59,7 @@ public class UserController extends BaseResponse {
   @Operation(summary = "Change current user's password")
   @PutMapping("/password")
   public ResponseEntity<ApiResponse<Void>> changeUserPassword(@AuthenticationPrincipal Jwt jwt, @RequestBody @Valid UpdatePasswordRequest request) {
-    String userId = jwt.getSubject();
+    UUID userId = UUID.fromString(jwt.getSubject());
     authService.updateUserPassword(userId, request);
     return responseEntity(true, "User password updated successfully.", HttpStatus.OK);
   }
