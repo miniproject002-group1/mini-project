@@ -1,15 +1,20 @@
 package com.example.productservice.model;
 
+import com.example.productservice.model.response.CategoryResponse;
+import com.example.productservice.model.response.ProductResponse;
+import com.example.productservice.model.response.UserResponse;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table
+@Table(name = "products")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +26,18 @@ public class Product {
 
     private Integer quantity;
 
-//    private Category category;
-//
-//    private User userId
+    private Long categoryId;
+
+    private Long userId;
+
+    public ProductResponse toProductResponse(CategoryResponse category, UserResponse user) {
+        return ProductResponse.builder()
+                .productId(id)
+                .name(name)
+                .price(price)
+                .quantity(quantity)
+                .category(category)
+                .user(user)
+                .build();
+    }
 }

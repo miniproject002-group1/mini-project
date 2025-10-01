@@ -2,18 +2,20 @@ package com.example.productservice.service;
 
 import com.example.productservice.model.Product;
 import com.example.productservice.model.request.ProductRequest;
+import com.example.productservice.model.response.APIResponse;
+import com.example.productservice.model.response.ProductResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface ProductService {
-    List<Product> findAll();
+    List<Product> getProducts();
 
-    Product findById(Long id);
+    ProductResponse getProductById(Long id);
 
     Product addProduct(ProductRequest product);
 
-    void delete(Long id);
+    APIResponse<Void> deleteProductById(Long id);
 
-    Product update(Long id, ProductRequest product);
+    Product updateProductById(Long id, ProductRequest product);
 }
