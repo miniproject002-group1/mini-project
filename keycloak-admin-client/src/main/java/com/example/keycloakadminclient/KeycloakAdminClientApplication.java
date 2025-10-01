@@ -14,8 +14,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @OpenAPIDefinition(
         info = @Info(title = "Keycloak Service API", version = "v1"),
-        servers = {@Server(url = "/")},
-        security = @SecurityRequirement(name = "bearerAuth")
+        servers = {@Server(url = "/")}
+//        security = @SecurityRequirement(name = "bearerAuth")
 )
 @SecurityScheme(
         name = "bearerAuth",
