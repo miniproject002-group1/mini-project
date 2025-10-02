@@ -6,6 +6,7 @@ import com.example.categoryservice.dto.response.*;
 import com.example.categoryservice.entity.Category;
 import com.example.categoryservice.exception.BadRequestException;
 import com.example.categoryservice.exception.NotFoundException;
+import com.example.categoryservice.exception.ServiceUnavailableException;
 import com.example.categoryservice.property.CategoryProp;
 import com.example.categoryservice.repository.CategoryRepository;
 import com.example.categoryservice.service.CategoryService;
@@ -47,12 +48,13 @@ public class CategoryServiceImp implements CategoryService {
     public PaginatedResponse<CategoryResponse> getAllCategories(int page, int size, CategoryProp categoryProp, Sort.Direction direction) {
         AppUserResponse userResponse = userClient.getCurrentUserProfile().getData();
         UUID userId = userResponse != null ? userResponse.getUserId() : null;
+
         if (userId == null) {
-            throw new IllegalStateException("Cannot create category: user-service unavailable or userId missing");
+            throw new IllegalStateException("Cannot fetch categories: user-service unavailable or userId missing");
         }
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(direction, categoryProp.getField()));
-        Page<Category> categoryPage = categoryRepository.findAll(pageable);
+        Page<Category> categoryPage = categoryRepository.findAllByUserId(userId, pageable);
 
         return PaginatedResponse.<CategoryResponse>builder()
                 .items(categoryPage.getContent().stream()
@@ -96,12 +98,12 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     public CategoryResponse createCategoryFallback(CategoryRequest request, Throwable throwable) {
-        throw new BadRequestException("Cannot create category: user-service unavailable");
+        throw new ServiceUnavailableException("Cannot create category: user-service unavailable");
     }
 
     public CategoryResponse updateCategoryFallback(UUID categoryId, CategoryRequest categoryRequest, Throwable throwable) {
         // Option 1: fail if user-service is down
-        throw new BadRequestException("Cannot update category: user-service unavailable or userId missing");
+        throw new ServiceUnavailableException("Cannot update category: user-service unavailable or userId missing");
 
         // Option 2: if you want to allow update but userResponse = null:
         // Category category = categoryRepository.findById(categoryId)
@@ -110,29 +112,14 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     public CategoryResponse getCategoryByIdFallback(UUID categoryId, Throwable throwable) {
-        throw new BadRequestException("Cannot create category: user-service unavailable");
+        throw new ServiceUnavailableException("Cannot find category by id : user-service unavailable");
 //        Category category = categoryRepository.findById(categoryId)
 //                .orElseThrow(() -> new NotFoundException("Category " + categoryId + " Not Found"));
 //        return category.toResponse(null);
     }
 
     public PaginatedResponse<CategoryResponse> getAllCategoriesFallback(int page, int size, CategoryProp categoryProp, Sort.Direction direction, Throwable throwable) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(direction, categoryProp.getField()));
-        Page<Category> categoryPage = categoryRepository.findAll(pageable);
-
-        List<CategoryResponse> categoryResponses = categoryPage.stream()
-                .map(category -> CategoryResponse.builder()
-                        .categoryId(category.getCategoryId())
-                        .categoryName(category.getCategoryName())
-                        .categoryDescription(category.getCategoryDescription())
-                        .userResponse(null)
-                        .build())
-                .collect(Collectors.toList());
-
-        return PaginatedResponse.<CategoryResponse>builder()
-                .items(categoryResponses)
-                .pagination(new Pagination(categoryPage))
-                .build();
+        throw new ServiceUnavailableException("Cannot get all category: user-service unavailable");
     }
 
 }

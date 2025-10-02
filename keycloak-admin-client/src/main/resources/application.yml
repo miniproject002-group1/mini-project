@@ -1,20 +1,27 @@
 spring:
   application:
     name: keycloak-admin-client
-  #  config:
-  #    import: "optional:configserver:http://localhost:8888"
+    # config:
+    # import: "optional:configserver:http://localhost:8888" # Temporarily disabled for testing
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8181/realms/spring-microservices-realm
+          issuer-uri: https://my-keycloak.ddns.net/realms/spring-microservices-realm
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          keycloak-auth-client:
+            url: ${app.keycloak.server-url}
+
 app:
   keycloak:
-    server-url: http://localhost:8181
+    server-url: https://my-keycloak.ddns.net
     realm: spring-microservices-realm
     client-id: api-gateway-client
-    client-secret: lPHXTFEi3sgPmt4VcXHgMWvTBe14eyER
-
+    client-secret: lhZvA4R3OtOdMqzQZS6NJl8CN7tfavOb
 
 server:
   port: 9003

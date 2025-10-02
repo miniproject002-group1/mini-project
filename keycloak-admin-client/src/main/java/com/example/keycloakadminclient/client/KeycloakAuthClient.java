@@ -11,7 +11,6 @@ import java.util.Map;
 
 @FeignClient(
         name = "keycloak-auth-client",
-        url = "${app.keycloak.server-url}",
         configuration = FeignFormConfig.class // Use our custom form encoder config
 )
 public interface KeycloakAuthClient {
