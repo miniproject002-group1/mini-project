@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Mini-project.iml" filepath="$PROJECT_DIR$/Mini-project.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/category-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/category-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/keycloak-admin-client.main.iml" filepath="$PROJECT_DIR$/.idea/modules/keycloak-admin-client.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/product-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/product-service.main.iml" />
     </modules>
   </component>
 </project>
