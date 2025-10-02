@@ -1,5 +1,5 @@
+// In: api-gateway/src/main/java/com/example/apigateway/config/CustomAuthenticationEntryPoint.java
 package com.example.apigateway.config;
-
 
 import com.example.apigateway.dto.ErrorResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
