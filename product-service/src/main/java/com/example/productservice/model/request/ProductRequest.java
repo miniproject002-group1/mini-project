@@ -3,7 +3,7 @@ package com.example.productservice.model.request;
 import com.example.productservice.model.Product;
 import com.example.productservice.model.response.CategoryResponse;
 import com.example.productservice.model.response.ProductResponse;
-import com.example.productservice.model.response.UserResponse;
+import com.example.productservice.model.response.AppUserResponse;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -41,13 +41,13 @@ public class ProductRequest {
                 .build();
     }
 
-    public ProductResponse toProductResponse(CategoryResponse categoryResponse, UserResponse userResponse) {
+    public ProductResponse toProductResponse(CategoryResponse categoryResponse, AppUserResponse appUserResponse) {
         return ProductResponse.builder()
                 .name(name)
                 .price(price)
                 .quantity(quantity)
                 .category(categoryResponse)
-                .user(userResponse)
+                .user(appUserResponse)
                 .build();
     }
 
