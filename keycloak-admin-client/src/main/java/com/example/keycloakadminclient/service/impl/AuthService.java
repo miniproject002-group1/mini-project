@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -53,6 +54,13 @@ public class AuthService implements IAuthService {
     user.setEmail(userCreateRequest.getEmail());
     user.setEmailVerified(true);
 
+    // Handles setting the imageUrl as a custom user attribute
+    if (userCreateRequest.getImageUrl() != null && !userCreateRequest.getImageUrl().isEmpty()) {
+      Map<String, List<String>> attributes = new HashMap<>();
+      attributes.put("imageUrl", Collections.singletonList(userCreateRequest.getImageUrl()));
+      user.setAttributes(attributes);
+    }
+
     CredentialRepresentation credential = new CredentialRepresentation();
     credential.setTemporary(false);
     credential.setType(CredentialRepresentation.PASSWORD);
@@ -61,14 +69,12 @@ public class AuthService implements IAuthService {
 
     UsersResource usersResource = keycloak.realm(realm).users();
     try (Response response = usersResource.create(user)) {
-      // 👇 Handle user creation conflict
       if (response.getStatus() == 409) {
         throw new UserAlreadyExistsException("User '" + userCreateRequest.getUsername() + "' already exists.");
       }
       if (response.getStatus() == 201) {
         log.info("User {} created successfully in Keycloak", user.getUsername());
       } else {
-        // Log other potential errors from Keycloak
         log.error("Error creating user {}, status: {}. Reason: {}", user.getUsername(), response.getStatus(), response.getStatusInfo().getReasonPhrase());
         throw new RuntimeException("Error creating user in Keycloak.");
       }
@@ -81,15 +87,68 @@ public class AuthService implements IAuthService {
     form.put("grant_type", "password");
     form.put("client_id", clientId);
     form.put("client_secret", clientSecret);
-    form.put("username", request.getUsername());
+    // Handles logging in with email instead of username
+    form.put("scope", "openid");
+    form.put("username", request.getEmail());
     form.put("password", request.getPassword());
 
-    // 👇 Handle invalid credentials from Feign client
     try {
       Map<String, Object> responseBody = keycloakAuthClient.token(realm, form);
       return mapToLoginResponse(responseBody);
     } catch (FeignException.Unauthorized | FeignException.BadRequest e) {
       throw new InvalidCredentialsException("Invalid username or password.");
+    }
+  }
+
+  @Override
+  public AppUserResponse getCurrentUserProfile(UUID userId) {
+    try {
+      UserResource userResource = keycloak.realm(realm).users().get(userId.toString());
+      UserRepresentation userRepresentation = userResource.toRepresentation();
+
+      // Handles retrieving the imageUrl from custom attributes
+      String imageUrl = null;
+      if (userRepresentation.getAttributes() != null && userRepresentation.getAttributes().containsKey("imageUrl")) {
+        imageUrl = userRepresentation.getAttributes().get("imageUrl").get(0);
+      }
+
+      return AppUserResponse.builder()
+              .userId(UUID.fromString(userRepresentation.getId()))
+              .username(userRepresentation.getUsername())
+              .email(userRepresentation.getEmail())
+              .firstName(userRepresentation.getFirstName())
+              .lastName(userRepresentation.getLastName())
+              .imageUrl(imageUrl)
+              .build();
+    } catch (NotFoundException e) {
+      throw new NotFoundException("User with ID '" + userId + "' not found.");
+    }
+  }
+
+  @Override
+  public AppUserResponse updateCurrentUserProfile(UUID userId, UpdateAppUserRequest request) {
+    try {
+      UserResource userResource = keycloak.realm(realm).users().get(userId.toString());
+      UserRepresentation userRepresentation = userResource.toRepresentation();
+
+      userRepresentation.setFirstName(request.getFirstName());
+      userRepresentation.setLastName(request.getLastName());
+      userRepresentation.setEmail(request.getEmail());
+
+      // Handles updating the imageUrl as a custom attribute
+      Map<String, List<String>> attributes = userRepresentation.getAttributes();
+      if (attributes == null) {
+        attributes = new HashMap<>();
+      }
+      attributes.put("imageUrl", Collections.singletonList(request.getImageUrl()));
+      userRepresentation.setAttributes(attributes);
+
+      userResource.update(userRepresentation);
+      log.info("User profile for {} updated.", userId);
+
+      return getCurrentUserProfile(userId);
+    } catch (NotFoundException e) {
+      throw new NotFoundException("User with ID '" + userId + "' not found.");
     }
   }
 
@@ -101,7 +160,6 @@ public class AuthService implements IAuthService {
     form.put("client_secret", clientSecret);
     form.put("refresh_token", refreshToken);
 
-    // 👇 Handle invalid refresh token
     try {
       Map<String, Object> responseBody = keycloakAuthClient.token(realm, form);
       return mapToLoginResponse(responseBody);
@@ -126,47 +184,7 @@ public class AuthService implements IAuthService {
   }
 
   @Override
-  public AppUserResponse getCurrentUserProfile(UUID userId) {
-    // 👇 Handle user not found
-    try {
-      UserResource userResource = keycloak.realm(realm).users().get(userId.toString());
-      UserRepresentation userRepresentation = userResource.toRepresentation();
-
-      return AppUserResponse.builder()
-              .userId(UUID.fromString(userRepresentation.getId()))
-              .username(userRepresentation.getUsername())
-              .email(userRepresentation.getEmail())
-              .firstName(userRepresentation.getFirstName())
-              .lastName(userRepresentation.getLastName())
-              .build();
-    } catch (NotFoundException e) {
-      throw new NotFoundException("User with ID '" + userId + "' not found.");
-    }
-  }
-
-  @Override
-  public AppUserResponse updateCurrentUserProfile(UUID userId, UpdateAppUserRequest request) {
-    // 👇 Handle user not found
-    try {
-      UserResource userResource = keycloak.realm(realm).users().get(userId.toString());
-      UserRepresentation userRepresentation = userResource.toRepresentation();
-
-      userRepresentation.setFirstName(request.getFirstName());
-      userRepresentation.setLastName(request.getLastName());
-      userRepresentation.setEmail(request.getEmail());
-
-      userResource.update(userRepresentation);
-      log.info("User profile for {} updated.", userId);
-
-      return getCurrentUserProfile(userId);
-    } catch (NotFoundException e) {
-      throw new NotFoundException("User with ID '" + userId + "' not found.");
-    }
-  }
-
-  @Override
   public void updateUserPassword(UUID userId, UpdatePasswordRequest request) {
-    // 👇 Handle user not found
     try {
       UserResource userResource = keycloak.realm(realm).users().get(userId.toString());
 
@@ -182,12 +200,19 @@ public class AuthService implements IAuthService {
     }
   }
 
+  // Handles mapping the full token response from Keycloak
   private LoginResponse mapToLoginResponse(Map<String, Object> responseBody) {
     if (responseBody != null) {
       return LoginResponse.builder()
               .accessToken((String) responseBody.get("access_token"))
-              .refreshToken((String) responseBody.get("refresh_token"))
               .expiresIn(((Number) responseBody.get("expires_in")).longValue())
+              .refreshExpiresIn(((Number) responseBody.get("refresh_expires_in")).longValue())
+              .refreshToken((String) responseBody.get("refresh_token"))
+              .tokenType((String) responseBody.get("token_type"))
+              .idToken((String) responseBody.get("id_token"))
+              .notBeforePolicy(((Number) responseBody.get("not-before-policy")).intValue())
+              .sessionState((String) responseBody.get("session_state"))
+              .scope((String) responseBody.get("scope"))
               .build();
     }
     return null;

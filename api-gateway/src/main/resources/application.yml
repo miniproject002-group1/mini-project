@@ -50,18 +50,18 @@ spring:
               filters:
                 - RewritePath=/v3/api-docs/keycloak-admin-client, /v3/api-docs
 
-#            - id: category-service-docs
-#              uri: lb://category-service
-#              predicates:
-#                - Path=/category-service/v3/api-docs/**, /api/v1/categories/**
-#              filters:
-#                - RewritePath=/category-service/(?<segment>.*), /${segment}
+  #            - id: category-service-docs
+  #              uri: lb://category-service
+  #              predicates:
+  #                - Path=/category-service/v3/api-docs/**, /api/v1/categories/**
+  #              filters:
+  #                - RewritePath=/category-service/(?<segment>.*), /${segment}
 
   security:
     oauth2:
-      resource server:
+      resourceserver:
         jwt:
-          issuer-uri: http://localhost:8181/realms/spring-microservices-realm
+          issuer-uri: https://my-keycloak.ddns.net/realms/spring-microservices-realm
 
 springdoc:
   swagger-ui:

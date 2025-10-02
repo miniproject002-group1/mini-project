@@ -7,4 +7,5 @@ public class UpdateAppUserRequest {
   private String firstName;
   private String lastName;
   private String email;
+  private String imageUrl;
 }

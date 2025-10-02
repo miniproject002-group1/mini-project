@@ -1,5 +1,6 @@
 package com.example.apigateway.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,12 +11,18 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
 @EnableWebFluxSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+  private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 
   @Bean
   public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
     http
-            .csrf(ServerHttpSecurity.CsrfSpec::disable)
+            .csrf(ServerHttpSecurity.CsrfSpec::disable).exceptionHandling(exceptionHandling ->
+                    exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint)
+            )
             .authorizeExchange(exchange -> exchange
                     .pathMatchers(HttpMethod.POST, "/api/v1/auths/**").permitAll()
 
