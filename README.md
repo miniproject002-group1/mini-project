@@ -45,8 +45,6 @@ Category Service (via Gateway) → http://localhost:8080/category
 
 Keycloak (external) → Already deployed
 
-#### you also need to run docker compose up
-
 📖 Notes
 
 Make sure to start Eureka Server and Config Server first, otherwise other services will fail to register or fetch configuration.
@@ -55,5 +53,5 @@ Keycloak configuration (realm, client, roles) must be set up before testing auth
 
 Use Postman or curl with a valid JWT token for testing secured endpoints.
 ```bash
-
+you also need to run docker compose up
 
