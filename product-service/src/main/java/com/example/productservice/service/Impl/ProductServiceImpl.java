@@ -4,9 +4,7 @@ package com.example.productservice.service.Impl;
 import com.example.productservice.client.CategoryClient;
 import com.example.productservice.client.UserClient;
 import com.example.productservice.enumeration.ProductProperties;
-import com.example.productservice.exception.BadRequestException;
 import com.example.productservice.exception.NotFoundException;
-import com.example.productservice.exception.ServiceUnavailableException;
 import com.example.productservice.model.Product;
 import com.example.productservice.model.request.ProductRequest;
 
@@ -14,18 +12,15 @@ import com.example.productservice.model.response.*;
 import com.example.productservice.repository.ProductRepository;
 import com.example.productservice.service.ProductService;
 import feign.FeignException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
+
 import java.util.UUID;
 import java.util.stream.Collectors;
 
