@@ -52,6 +52,8 @@ Make sure to start Eureka Server and Config Server first, otherwise other servic
 Keycloak configuration (realm, client, roles) must be set up before testing authentication.
 
 Use Postman or curl with a valid JWT token for testing secured endpoints.
+
+###🌐 You also need to run the command below to start the docker
 ```bash
-you also need to run docker compose up
+docker compose up
 
