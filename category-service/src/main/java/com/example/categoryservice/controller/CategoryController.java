@@ -54,7 +54,7 @@ public class CategoryController extends BaseController {
     @GetMapping("/{category-Id}")
     @Operation(summary = "Get category by ID")
     public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(
-            @PathVariable("category-Id") @Positive UUID categoryId
+            @PathVariable("category-Id") UUID categoryId
     ) {
         return response("Category id : " + categoryId + " retrieved successfully.",
                 categoryService.getCategoryById(categoryId));
@@ -63,7 +63,7 @@ public class CategoryController extends BaseController {
     @DeleteMapping("/{category-Id}")
     @Operation(summary = "Delete category by ID")
     public ResponseEntity<ApiResponse<Object>> deleteCategoryById(
-            @PathVariable("category-Id") @Positive UUID categoryId
+            @PathVariable("category-Id") UUID categoryId
     ) {
         categoryService.deleteCategoryById(categoryId);
         return responseForDelete("Category id : " + categoryId + " deleted successfully.");
@@ -72,7 +72,7 @@ public class CategoryController extends BaseController {
     @PutMapping("/{category-id}")
     @Operation(summary = "Update category by ID")
     public ResponseEntity<ApiResponse<CategoryResponse>> updateCategoryById(
-            @PathVariable("category-id") @Positive UUID categoryId,
+            @PathVariable("category-id") UUID categoryId,
             @RequestBody @Valid CategoryRequest categoryRequest) {
         return response("Category id : " + categoryId + " updated successfully.",
                 categoryService.updateCategoryById(categoryId,categoryRequest));
