@@ -8,9 +8,10 @@ import java.util.UUID;
 @Data
 @Builder
 public class AppUserResponse {
-  private UUID id;
-  private String username;
-  private String email;
+  private UUID userId;
   private String firstName;
   private String lastName;
+  private String username;
+  private String email;
+  private String imageUrl;
 }
