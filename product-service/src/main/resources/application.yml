@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: product-service
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  cloud:
+    config:
+      uri: http://localhost:8888
+  profiles:
+    active: prod
+#  security:
+#    oauth2:
+#      resource server:
+#        jwt:
+#          issuer-uri: http://localhost:8181/realms/spring-microservices-realm
+#springdoc:
+#  api-docs:
+#    path: /v3/api-docs
