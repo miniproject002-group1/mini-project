@@ -37,7 +37,6 @@ public class UserController extends BaseResponse {
     return responseEntity(true, "User registered successfully.", HttpStatus.CREATED);
   }
 
-  // 👇 ADD THIS ANNOTATION
   @SecurityRequirement(name = "bearerAuth")
   @Operation(summary = "Get current user's information")
   @GetMapping
