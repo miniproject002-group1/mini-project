@@ -9,7 +9,7 @@ import com.example.keycloakadminclient.dto.response.BaseResponse;
 import com.example.keycloakadminclient.service.impl.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement; // Make sure this is imported
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,6 @@ public class UserController extends BaseResponse {
     return responseEntity(true, "User profile retrieved successfully.", HttpStatus.OK, authService.getCurrentUserProfile(userId));
   }
 
-  // 👇 ADD THIS ANNOTATION
   @SecurityRequirement(name = "bearerAuth")
   @Operation(summary = "Update current user's information")
   @PutMapping
@@ -54,7 +53,6 @@ public class UserController extends BaseResponse {
     return responseEntity(true, "User profile updated successfully.", HttpStatus.OK, authService.updateCurrentUserProfile(userId, request));
   }
 
-  // 👇 ADD THIS ANNOTATION
   @SecurityRequirement(name = "bearerAuth")
   @Operation(summary = "Change current user's password")
   @PutMapping("/password")
@@ -65,7 +63,6 @@ public class UserController extends BaseResponse {
   }
 
 
-  //get Current user for feign
   @GetMapping("/user")
   public AppUserResponse getCurrentUser(@RequestHeader("X-User-Id") String userId) {
     return authService.getCurrentUserProfile(UUID.fromString(userId));
