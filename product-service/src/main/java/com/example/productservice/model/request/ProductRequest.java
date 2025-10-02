@@ -33,7 +33,7 @@ public class ProductRequest {
 
     public Product toProduct(UUID userId) {
         return Product.builder()
-                .name(name)
+                .name(name != null?name.trim():null)
                 .price(price)
                 .quantity(quantity)
                 .categoryId(categoryId)
@@ -54,7 +54,7 @@ public class ProductRequest {
     public Product updateProduct(UUID id,UUID userId) {
         return Product.builder()
                 .id(id)
-                .name(name)
+                .name(name.trim())
                 .price(price)
                 .quantity(quantity)
                 .categoryId(categoryId)
