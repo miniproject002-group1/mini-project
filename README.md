@@ -49,9 +49,7 @@ Keycloak (external) → Already deployed
 
 Make sure to start Eureka Server and Config Server first, otherwise other services will fail to register or fetch configuration.
 
-Keycloak configuration (realm, client, roles) must be set up before testing authentication.
-
-Use Postman or curl with a valid JWT token for testing secured endpoints.
+Keycloak configuration is already config so you just need to register the user inside swagger-ui of gateway
 
 ###🌐 You also need to run the command below to start the docker
 ```bash
