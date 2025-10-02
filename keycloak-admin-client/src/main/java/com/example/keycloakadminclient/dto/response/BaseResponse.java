@@ -14,7 +14,7 @@ public abstract class BaseResponse {
     ApiResponse<T> response = ApiResponse.<T>builder()
             .success(success)
             .message(message)
-            .status(status.value())
+            .status(HttpStatus.OK)
             .data(data)
             .build();
 

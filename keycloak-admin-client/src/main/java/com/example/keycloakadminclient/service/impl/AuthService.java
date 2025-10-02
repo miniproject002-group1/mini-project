@@ -133,7 +133,7 @@ public class AuthService implements IAuthService {
       UserRepresentation userRepresentation = userResource.toRepresentation();
 
       return AppUserResponse.builder()
-              .id(UUID.fromString(userRepresentation.getId()))
+              .userId(UUID.fromString(userRepresentation.getId()))
               .username(userRepresentation.getUsername())
               .email(userRepresentation.getEmail())
               .firstName(userRepresentation.getFirstName())

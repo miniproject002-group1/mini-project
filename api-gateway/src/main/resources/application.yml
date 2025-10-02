@@ -10,8 +10,16 @@ spring:
             - id: category-service-route
               uri: lb://category-service
               predicates:
-                # This path is now specific to categories
-                - Path=/api/v1/categories/**
+                - Path=/api/v1/categories/** # distinct prefix
+            #              filters:
+            #                - RewritePath=/api/v1/categories/(?<segment>.*), /categories/${segment}
+
+            - id: product-service-api
+              uri: lb://product-service
+              predicates:
+                - Path=/api/v1/products/** # distinct prefix
+            #              filters:
+            #                - RewritePath=/api/v1/products/(?<segment>.*), /api/v1/products/${segment}
 
             # Route for the Keycloak Admin Client API
             - id: keycloak-admin-client-route
@@ -28,6 +36,12 @@ spring:
               filters:
                 - RewritePath=/v3/api-docs/category-service, /v3/api-docs
 
+            - id: product-service-docs
+              uri: lb://product-service
+              predicates:
+                - Path=/v3/api-docs/product-service
+              filters:
+                - RewritePath=/v3/api-docs/product-service, /v3/api-docs
             # Route for the Keycloak Admin Client's API documentation
             - id: keycloak-admin-client-docs-route
               uri: lb://keycloak-admin-client
@@ -36,9 +50,16 @@ spring:
               filters:
                 - RewritePath=/v3/api-docs/keycloak-admin-client, /v3/api-docs
 
+#            - id: category-service-docs
+#              uri: lb://category-service
+#              predicates:
+#                - Path=/category-service/v3/api-docs/**, /api/v1/categories/**
+#              filters:
+#                - RewritePath=/category-service/(?<segment>.*), /${segment}
+
   security:
     oauth2:
-      resourceserver:
+      resource server:
         jwt:
           issuer-uri: http://localhost:8181/realms/spring-microservices-realm
 
@@ -49,6 +70,8 @@ springdoc:
         url: /v3/api-docs/keycloak-admin-client
       - name: Category Service
         url: /v3/api-docs/category-service
+      - name: Product Service
+        url: /v3/api-docs/product-service
   api-docs:
     groups:
       enabled: true

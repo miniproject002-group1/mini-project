@@ -7,6 +7,7 @@ import com.example.keycloakadminclient.dto.response.ApiResponse;
 import com.example.keycloakadminclient.dto.response.AppUserResponse;
 import com.example.keycloakadminclient.dto.response.BaseResponse;
 import com.example.keycloakadminclient.service.impl.AuthService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement; // Make sure this is imported
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -62,4 +63,12 @@ public class UserController extends BaseResponse {
     authService.updateUserPassword(userId, request);
     return responseEntity(true, "User password updated successfully.", HttpStatus.OK);
   }
+
+
+  //get Current user for feign
+  @GetMapping("/user")
+  public AppUserResponse getCurrentUser(@RequestHeader("X-User-Id") String userId) {
+    return authService.getCurrentUserProfile(UUID.fromString(userId));
+  }
+
 }
