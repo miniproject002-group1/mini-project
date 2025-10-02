@@ -13,7 +13,7 @@ app:
     server-url: http://localhost:8181
     realm: spring-microservices-realm
     client-id: api-gateway-client
-    client-secret: gLRHd4y6DYdxUTHmJOwbHlDV3xkaK4i5
+    client-secret: lPHXTFEi3sgPmt4VcXHgMWvTBe14eyER
 
 
 server:
