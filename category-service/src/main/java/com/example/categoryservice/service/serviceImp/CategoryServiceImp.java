@@ -1,5 +1,6 @@
 package com.example.categoryservice.service.serviceImp;
 
+import com.example.categoryservice.client.ProductClient;
 import com.example.categoryservice.client.UserClient;
 import com.example.categoryservice.dto.request.CategoryRequest;
 import com.example.categoryservice.dto.response.*;
@@ -11,6 +12,7 @@ import com.example.categoryservice.property.CategoryProp;
 import com.example.categoryservice.repository.CategoryRepository;
 import com.example.categoryservice.service.CategoryService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +31,7 @@ public class CategoryServiceImp implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final UserClient userClient;
+    private final ProductClient productClient;
 
     @Override
     @CircuitBreaker(name = "userCB",fallbackMethod = "createCategoryFallback")
@@ -65,7 +68,9 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    @CircuitBreaker(name = "userCB",fallbackMethod = "getCategoryByIdFallback")
+    @CircuitBreaker(name = "userCB",
+            fallbackMethod = "getCategoryByIdFallback"
+    )
     public CategoryResponse getCategoryById(UUID categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new NotFoundException("Category " + categoryId + " Not Found"));
         AppUserResponse userResponse = userClient.getCurrentUserProfile().getData();
@@ -98,6 +103,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     public CategoryResponse createCategoryFallback(CategoryRequest request, Throwable throwable) {
+
         throw new ServiceUnavailableException("Cannot create category: user-service unavailable");
     }
 
@@ -112,14 +118,26 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     public CategoryResponse getCategoryByIdFallback(UUID categoryId, Throwable throwable) {
+        Throwable cause = throwable;
+        while (cause.getCause() != null && cause != cause.getCause()) {
+            cause = cause.getCause();
+        }
+
+        if (cause instanceof NotFoundException) {
+            throw (NotFoundException) cause;
+        }
+        System.out.println("Fallback triggered because of: " + throwable.getClass() + " - " + throwable.getMessage());
         throw new ServiceUnavailableException("Cannot find category by id : user-service unavailable");
-//        Category category = categoryRepository.findById(categoryId)
-//                .orElseThrow(() -> new NotFoundException("Category " + categoryId + " Not Found"));
-//        return category.toResponse(null);
     }
 
     public PaginatedResponse<CategoryResponse> getAllCategoriesFallback(int page, int size, CategoryProp categoryProp, Sort.Direction direction, Throwable throwable) {
         throw new ServiceUnavailableException("Cannot get all category: user-service unavailable");
+    }
+
+    @Transactional
+    public void deleteCategory(UUID categoryId) {
+        categoryRepository.deleteById(categoryId);
+        productClient.deleteProductsByCategory(categoryId);
     }
 
 }

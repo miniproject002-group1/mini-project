@@ -6,3 +6,10 @@ spring:
   cloud:
     config:
       uri: http://localhost:8888
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userCB:
+        ignore-exceptions:
+          - com.example.categoryservice.exception.NotFoundException
