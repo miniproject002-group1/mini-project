@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
 //    return problemDetail;
 //  }
 
-  // --- NOT FOUND (404) ---
+//   --- NOT FOUND (404) ---
   @ExceptionHandler(NotFoundException.class)
   public ProblemDetail handleNotFoundException(NotFoundException ex, WebRequest request) {
     ProblemDetail problemDetail =
@@ -90,14 +90,39 @@ public class GlobalExceptionHandler {
     return problemDetail;
   }
 
-  // --- SERVICE UNAVAILABLE (503) ---
-  @ExceptionHandler(ServiceUnavailableException.class)
-  public ProblemDetail handleServiceUnavailable(ServiceUnavailableException ex, WebRequest request) {
-    ProblemDetail problemDetail =
-            createProblemDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
-    problemDetail.setTitle("Service Unavailable");
-    return problemDetail;
-  }
+//  // Handle NotFoundException -> 400
+//  @ExceptionHandler(NotFoundException.class)
+//  public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException ex) {
+//    Map<String, Object> body = new HashMap<>();
+//    body.put("type", "about:blank");
+//    body.put("title", "Bad Request");
+//    body.put("status", 400);
+//    body.put("detail", ex.getMessage());
+//    body.put("instance", "");
+//    body.put("timestamp", Instant.now().toString());
+//    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+//  }
+//
+//  @ExceptionHandler(ServiceUnavailableException.class)
+//  public ResponseEntity<Map<String, Object>> handleServiceUnavailable(ServiceUnavailableException ex) {
+//    Map<String, Object> body = new HashMap<>();
+//    body.put("type", "about:blank");
+//    body.put("title", "Service Unavailable");
+//    body.put("status", 503);
+//    body.put("detail", ex.getMessage());
+//    body.put("instance", "");
+//    body.put("timestamp", Instant.now().toString());
+//    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(body);
+//  }
+
+//   --- SERVICE UNAVAILABLE (503) ---
+//  @ExceptionHandler(ServiceUnavailableException.class)
+//  public ProblemDetail handleServiceUnavailable(ServiceUnavailableException ex, WebRequest request) {
+//    ProblemDetail problemDetail =
+//            createProblemDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
+//    problemDetail.setTitle("Service Unavailable");
+//    return problemDetail;
+//  }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
   public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException ex) {

@@ -2,6 +2,7 @@ package com.example.productservice.model.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,14 +10,14 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class APIResponse<T> {
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ApiResponse<T> {
+  private boolean success;
   private String message;
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private T payload;
-
   private HttpStatus status;
+  private T data;
   private LocalDateTime instant;
 }

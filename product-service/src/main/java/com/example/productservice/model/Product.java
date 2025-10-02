@@ -2,7 +2,7 @@ package com.example.productservice.model;
 
 import com.example.productservice.model.response.CategoryResponse;
 import com.example.productservice.model.response.ProductResponse;
-import com.example.productservice.model.response.UserResponse;
+import com.example.productservice.model.response.AppUserResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,7 +34,7 @@ public class Product {
     @Column(nullable = false)
     private UUID userId;
 
-    public ProductResponse toProductResponse(CategoryResponse category, UserResponse user) {
+    public ProductResponse toProductResponse(CategoryResponse category, AppUserResponse user) {
         return ProductResponse.builder()
                 .productId(id)
                 .name(name)

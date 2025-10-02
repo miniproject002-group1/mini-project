@@ -1,5 +1,6 @@
 package com.example.productservice.client;
 
+import com.example.productservice.model.response.ApiResponse;
 import com.example.productservice.model.response.CategoryResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,6 @@ import java.util.UUID;
 
 @FeignClient(name = "category-service",path = "/api/v1/categories")
 public interface CategoryClient {
-    @GetMapping("/{id}")
-    CategoryResponse getCategoryById(@PathVariable UUID id);
+    @GetMapping("/{category-Id}")
+    ApiResponse<CategoryResponse> getCategoryById(@PathVariable("category-Id") UUID categoryId);
 }
