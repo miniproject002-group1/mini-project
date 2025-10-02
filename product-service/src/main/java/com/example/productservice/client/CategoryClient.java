@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;
 
-@FeignClient(name = "CATEGORY-SERVICE",path = "/api/v1/categories")
+@FeignClient(name = "category-service",path = "/api/v1/categories")
 public interface CategoryClient {
     @GetMapping("/{id}")
     CategoryResponse getCategoryById(@PathVariable UUID id);

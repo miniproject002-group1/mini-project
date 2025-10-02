@@ -28,26 +28,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final CategoryClient categoryClient;
-    private final UserClient userClient;
     private final ProductRepository productRepository;
+    private final CategoryIntegrationService categoryIntegrationService;
+    private final UserIntegrationService userIntegrationService;
 
     private Product getProductByProductId(UUID productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
     }
 
-    private CategoryResponse getCategoryByCategoryId(UUID categoryId) {
-        CategoryResponse categoryResponse = categoryClient.getCategoryById(categoryId);
-        if(categoryResponse == null ||categoryResponse.getCategoryId() == null) {
-            throw new NotFoundException("Category Id not found");
-        }
-        return categoryResponse;
-    }
-
     @Override
     public List<ProductResponse> getProducts(
             int page, int size, ProductProperties sortBy, Sort.Direction sortDirection) {
-
 
         Pageable pageable = PageRequest.of(page-1,size,Sort.by(sortDirection,sortBy.name()));
 
@@ -56,25 +48,26 @@ public class ProductServiceImpl implements ProductService {
         return productResponses.getContent().stream().map(
                 product -> {
                     CategoryResponse categoryResponse = categoryClient.getCategoryById(product.getCategoryId());
-                    UserResponse userResponse = userClient.getCurrentUser(product.getUserId().toString());
+                    UserResponse userResponse = userIntegrationService.getUserByUserId(product.getUserId().toString());
                     return product.toProductResponse(categoryResponse,userResponse);
                 }).toList();
     }
 
+
     @Override
     public ProductResponse getProductById(UUID id,String userId) {
         Product product = getProductByProductId(id);
-        CategoryResponse categoryResponse = getCategoryByCategoryId(product.getCategoryId());
-        UserResponse userResponse = userClient.getCurrentUser(userId);
+        CategoryResponse categoryResponse = categoryIntegrationService.getCategoryByCategoryId(product.getCategoryId());
+        UserResponse userResponse = userIntegrationService.getUserByUserId(userId);
         return product.toProductResponse(categoryResponse, userResponse);
     }
 
     @Override
     public ProductResponse addProduct(ProductRequest request,String userId) {
 
-        CategoryResponse categoryResponse = getCategoryByCategoryId(request.getCategoryId());
+        CategoryResponse categoryResponse = categoryIntegrationService.getCategoryByCategoryId(request.getCategoryId());
 
-        UserResponse userResponse = userClient.getCurrentUser(userId);
+        UserResponse userResponse = userIntegrationService.getUserByUserId(userId);
         if(userResponse == null || userResponse.getId() == null){
             throw new NotFoundException("Invalid User");
         }
@@ -97,7 +90,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product updateProductById(UUID id, ProductRequest request,String userId) {
         getProductByProductId(id);
-        getCategoryByCategoryId(request.getCategoryId());
+        categoryIntegrationService.getCategoryByCategoryId(request.getCategoryId());
         return productRepository.save(request.updateProduct(id, UUID.fromString(userId)));
     }
+
 }

@@ -90,6 +90,15 @@ public class GlobalExceptionHandler {
     return problemDetail;
   }
 
+  // --- SERVICE UNAVAILABLE (503) ---
+  @ExceptionHandler(ServiceUnavailableException.class)
+  public ProblemDetail handleServiceUnavailable(ServiceUnavailableException ex, WebRequest request) {
+    ProblemDetail problemDetail =
+            createProblemDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
+    problemDetail.setTitle("Service Unavailable");
+    return problemDetail;
+  }
+
   @ExceptionHandler(DataIntegrityViolationException.class)
   public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException ex) {
     // Default response
